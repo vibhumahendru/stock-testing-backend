@@ -20,7 +20,7 @@ class TickerViewSet(viewsets.ModelViewSet):
         return Ticker.objects.all()
 
 class PortfolioViewSet(viewsets.ModelViewSet):
-    """
+    """ 
     A viewset for viewing and editing user instances.
     """
     serializer_class = PortfolioSerializer
@@ -35,6 +35,7 @@ class PositionViewSet(viewsets.ModelViewSet):
     """
     serializer_class = PositionSerializer
     filter_backends = [DjangoFilterBackend]
+    filter_fields = ['portfolio']
 
     def get_queryset(self):
         return Position.objects.all()
