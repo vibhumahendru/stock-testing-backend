@@ -70,18 +70,3 @@ class PositionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
 
         return Position.objects.filter(portfolio__user=self.request.user)
-
-class PositionViewSet(viewsets.ModelViewSet):
-    """
-    A viewset for viewing and editing user instances.
-    """
-    authentication_classes = [TokenAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticated]
-
-    serializer_class = PositionSerializer
-    filter_backends = [DjangoFilterBackend]
-    filter_fields = ['portfolio']
-
-    def get_queryset(self):
-
-        return Position.objects.filter(portfolio__user=self.request.user)
