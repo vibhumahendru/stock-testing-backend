@@ -1,1 +1,1 @@
-web: gunicorn wehelp_core.wsgi --log-file -
+web: gunicorn track_stocks.wsgi --log-file -
