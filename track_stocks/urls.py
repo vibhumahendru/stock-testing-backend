@@ -18,6 +18,8 @@ from django.urls import path
 from rest_framework import routers
 from django.conf.urls import url, include
 from stocks_core.views import *
+from django.contrib.auth import views as auth_views
+
 
 
 ticker_router = routers.DefaultRouter()
@@ -29,9 +31,13 @@ portfolio_router.register(r'', PortfolioViewSet, basename='portfolio')
 position_router = routers.DefaultRouter()
 position_router.register(r'', PositionViewSet, basename='position')
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^ticker/', include(ticker_router.urls)),
     url(r'^portfolio/', include(portfolio_router.urls)),
     url(r'^position/', include(position_router.urls)),
+    path('accounts/login/', auth_views.LoginView.as_view()),
+    url(r'^auth/', include('djoser.urls')),
+    url(r'^auth/', include('djoser.urls.authtoken')),
 ]
