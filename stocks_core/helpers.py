@@ -85,3 +85,6 @@ def mti():
 def make_tickers(data):
     for d in data['data']:
         Ticker.objects.create(name=d['name'], symbol=d['symbol'])
+
+def remove_mse():
+    Ticker.objects.filter(exchange="MSE").delete()
