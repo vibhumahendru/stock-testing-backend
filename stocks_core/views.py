@@ -55,7 +55,6 @@ class PortfolioViewSet(viewsets.ModelViewSet):
 
 
 
-
 class PositionViewSet(viewsets.ModelViewSet):
     """
     A viewset for viewing and editing user instances.

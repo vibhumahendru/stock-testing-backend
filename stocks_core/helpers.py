@@ -82,9 +82,15 @@ def mti():
 
 
 
-def make_tickers(data):
+def make_tickers():
+    r = requests.get(f'http://api.marketstack.com/v1/tickers?access_key=f70130f3feb925809bc72f5439b6acbe&limit=350&exchange=XNSE')
+    data = json.loads(r.content)
+
     for d in data['data']:
-        Ticker.objects.create(name=d['name'], symbol=d['symbol'])
+        try:
+            t = Ticker.objects.get(name=d['name'])
+        except Exception as e:
+            Ticker.objects.create(name=d['name'], symbol=d['symbol'], currency_code='INR', currency_symbol='Rs', exchange='NSE')
 
 def remove_mse():
     Ticker.objects.filter(exchange="MSE").delete()

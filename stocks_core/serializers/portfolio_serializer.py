@@ -6,6 +6,13 @@ import json
 from django.conf import settings
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from django.core.cache import cache
+import pandas as pd
+import os
+from decimal import Decimal
+
+
+nifty_csv_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../nifty_data.csv')
+nifty_df = pd.read_csv(nifty_csv_path)
 
 
 class PortfolioSerializer(serializers.ModelSerializer):
@@ -15,6 +22,7 @@ class PortfolioSerializer(serializers.ModelSerializer):
     portfolio_currency = serializers.SerializerMethodField()
     num_positions = serializers.SerializerMethodField()
     num_unique_stocks = serializers.SerializerMethodField()
+    nifty_comparison = serializers.SerializerMethodField()
 
     class Meta:
         model = Portfolio
@@ -78,6 +86,70 @@ class PortfolioSerializer(serializers.ModelSerializer):
 
     def get_num_unique_stocks(self, obj):
         return len(obj.positions.all().values("ticker__symbol").distinct())
+
+
+    def get_nifty_comparison(self, obj):
+        try:
+            unique_date = obj.positions.all().values("buy_date").distinct()
+
+            total_dates = {}
+            # total_dates = {
+            #     date1:total_invested
+            # }
+
+            time_format = '%d-%b-%Y'
+
+            for p in obj.positions.all():
+                if p.buy_date.strftime(time_format) in total_dates:
+                    total_dates[p.buy_date.strftime(time_format)] += p.buy_price * p.num_units
+                else:
+                    total_dates[p.buy_date.strftime(time_format)] = p.buy_price * p.num_units
+
+            total_nifty_units = 0
+            total_invested_in_nifty = 0
+
+            for date in total_dates:
+                """
+                get nifty price on that day
+                calc num units bought of nifty on that day
+                sum nifty units, sum invested total
+                nifty units * latest price
+                compare with invested total
+                """
+
+                try:
+                    row = nifty_df[nifty_df['Date'] == date]
+                    close_price = Decimal(row['Close'].iloc[0])
+                    total_invested_on_day = total_dates[date]
+                    # print(type(total_invested_on_day), "total_invested_on_day")
+                    # print(type(close_price), "close_price")
+                    nifty_units = total_invested_on_day / close_price
+
+                    print(nifty_units, "nifty_units")
+                    print(total_invested_on_day, "total_invested_on_day")
+
+                    total_nifty_units += nifty_units
+                    total_invested_in_nifty += total_invested_on_day
+
+
+                except Exception as e:
+                    pass
+            #
+            # print(total_nifty_units, "total_nifty_units")
+            # print(total_invested_in_nifty, "total_invested_in_nifty")
+
+            total_nifty_value = Decimal(nifty_df.iloc[[-1]]['Close'].iloc[0]) * total_nifty_units
+            print(total_nifty_value, "total_nifty_value")
+            percent_change = ((total_nifty_value - total_invested_in_nifty) / total_invested_in_nifty) * 100
+
+            return round(percent_change, 2)
+        except Exception as e:
+            return 0
+        # print(nifty_df)
+
+
+
+
 
 
 
