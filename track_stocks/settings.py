@@ -114,7 +114,7 @@ DATABASES = {
     }
 }
 
-MARKETSTACK_API_KEY = 'a0e8fa8c14c7a8608aeb8119780da3a5'
+MARKETSTACK_API_KEY = '21c9cf0550046f3baab4082885ff344f'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
